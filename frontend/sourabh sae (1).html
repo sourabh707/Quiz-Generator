@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <title>Document</title>
+</head>
+<body onload="setupDeleteButtons()">
+  <div class="container"><button class="shuffle" id="shuffle">SHUFFLE</button></div>
+  <div class="container">
+    <div class="box form_title">
+      <input type="text" placeholder="Title of form">
+      <input type="text" placeholder="Form description">
+    </div>
+  
+    <div class="icon-bar">
+      <div class="add-elements">
+        add
+      </div>
+      <i class="fa fa-list-ol ic" aria-hidden="true" id="multiple" ></i>
+      <i class="fa fa-paragraph ic" aria-hidden="true" id="paragraph" ></i>
+      <i class="fa fa-file ic" aria-hidden="true" id="fileUpload"></i>
+    </div>
+  
+    <div id="main">
+      <div class="box" >
+        <input type="text" placeholder="Question">
+        <div class="sample-text">
+          Upload a file
+        </div>
+        <div class="seperator"></div>
+        <div class="question-control">
+          <div class="required">
+            <span>Required</span>
+            <input type="checkbox" id="switch" class="checkbox" />
+            <label for="switch" class="toggle">
+          </div>
+          <div class="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></div>
+        </div>
+      </div>
+    </div>
+   
+    <div class="result">
+      <div class="create-button">Create</div>
+      <div class="cancel-button">Cancel</div>
+    </div>
+  </div>
+</body>
+<script src="form.js"></script>
+</html>
