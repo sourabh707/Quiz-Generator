@@ -1,0 +1,110 @@
+*{
+    margin: 0px 0px;
+    padding: 0px 0px;
+}
+
+.navbar{
+background-color:rgb(209, 206, 206);
+text-align: right;
+}
+
+.rightnav form button{
+padding: 6px 20px;
+border: 2px solid green;
+background-color: rgb(209, 206, 206);
+color: green;
+margin: 10px;
+font-size: 1rem;
+font-weight: 300;
+border-radius: 10px;
+cursor: pointer;   
+}
+
+.rightnav form button:hover{
+background-color: green;
+color: rgb(209, 206, 206); 
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+a {
+    text-decoration: none;
+    color: green;
+    background-color:white;
+    font-size: 40px;
+    display: inline-block;
+    margin-left: 20px;
+}
+.a{
+    background-color: rgb(243, 245, 235);
+}
+.box {
+    border-top:solid;
+    border-color: green;
+    border-width: 10px;
+    padding-bottom:30px;
+    width:700px;
+    background-color:rgb(243, 245, 235)  ;
+    border-radius: 20px;
+}
+
+.hide {
+    display: none;
+}
+
+.a:hover+.hide {
+    display: block;
+    font-family: cursive;
+    size: initial;
+    background-color:#e6f0e1;
+}
+
+h1 {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+    text-align: center;
+    padding: 20px;
+    border-radius:15px;
+    background-color: white;
+    border: solid white 2vh;
+}
+
+.row {
+    border-radius: 15px;
+    height: 60px;
+    background-color:white;
+}
+
+.subject {
+    margin: 10px;
+    padding: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    float:left;
+}
+
+.fixedItems{
+    float:right;
+}
+.date {
+    margin-top: 10px;
+    padding: 10px;
+    padding-left:20px;
+    padding-right:0px;
+    align-content: center;      
+    font-size: large;      
+    border-left: solid green 3px;  
+    float:left;
+}
+
+.row .delete, .row .download {
+    font-size: 30px;
+    padding-top: 15px;
+    padding-left:10px;
+    padding-right:15px;
+}
