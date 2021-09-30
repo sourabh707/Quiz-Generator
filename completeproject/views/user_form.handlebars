@@ -6,33 +6,116 @@
   </div>
 
   <form id="main">
-    <input type="number" min="1" class="ID" placeholder="Roll Number">
+    <input type="number" min="1" class="ID" id="op" data-id="ok" placeholder="Roll Number">
   </form>
   <div class="result">
-    <div class="create-button" id="submit_form">Submit</div>
+    <div class="create-button" id="submit_form" type="submit">Submit</div>
     {{!-- <div class="cancel-button">Cancel</div> --}}
   </div>
 
 </div>
 
 <script>
+
+
+  const params = (new URL(document.location)).searchParams;
+  //  const form_title=params.get('form_title');
+  //console.log(params.get('form_title'));
+  var decrypted = atob(params.get('form_title'));
+  var form_title = decrypted;
+</script>
+
+<script>
   let mainContainer = document.getElementById("main");
   const title = document.querySelector('#title');
   const desc = document.querySelector('#desc');
-  title.innerHTML = "First form";
+  title.innerHTML = form_title;
+  // console.log(title.innerHTML);
 
 
 
   function fn(bool, e) { //console.log(bool);
     if (bool) {
-     additional.childNodes[1].innerHTML += `<span class='star'>*</span>`;
-  
+      additional.childNodes[1].innerHTML += `<span class='star'>*</span>`;
+      //console.log(additional.childNodes[3].className);
+      if (additional.className != "mcqType box") {
+        additional.childNodes[3].setAttribute("data-id", "ok");
+      }
+
+
+
+
+
+
+
+
     }
+  }
+
+  function null_check() {
+
+    //let li = document.querySelectorAll("[data-id=\'" + "ok" + "\']");
+
+    //li[0].scrollIntoView({ behavior: 'smooth', block: 'end'});
+
+    let li = document.querySelectorAll("[data-id=\'" + "ok" + "\']");
+    //  console.log(final.length);
+    //console.log(li.length);
+    for (var i = 0; i < li.length; i++) {
+      //console.log(li[i].value + " " + i + " " + li[i].type);
+      if (li[i].type == "number") {
+        if (li[i].value == 0) { //console.log("hi");
+          // alert("fill up");
+          li[i].scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+          alert("fill up required feilds");
+
+          return false;
+
+        }
+      }
+      if (li[i].type == "textarea") {
+        if (li[i].value == "") { //console.log("hi");
+          // alert("fill up");
+          li[i].scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+          alert("fill up required feilds");
+
+          return false;
+
+        }
+      }
+
+
+      if (li[i].type == "file") { //console.log("hi"+i);
+        if (li[i].files.length == 0) {
+          li[i].scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+          alert("fill up required feilds");
+
+          return false;
+        }
+      }
+
+
+
+
+    }
+    return true;
+
+
   }
 
 
 
-  var docRef = db.collection('form').doc("First form");
+
+
+
+
+
+
+  var docRef = db.collection('form').doc(title.innerHTML);
+  var previous_roll_no = [];
 
   docRef.get().then((doc) => {
     desc.innerHTML = doc.data().desc;
@@ -43,8 +126,21 @@
     console.log("Error getting document:", error);
   });
   var count = 3;
+
+  docRef.collection("ans").get().then((querySnapshot) => {
+
+    querySnapshot.forEach((doc) => {
+      var p = doc.id;
+      previous_roll_no.push(p);
+      ///  console.log(p+" "+previous_roll_no.length);
+
+    })
+  })
+
   docRef.collection("hi").get()
     .then((querySnapshot) => {
+
+
       querySnapshot.forEach((doc) => {
         // doc.data() is never undefined for query doc snapshots
         //console.log(doc.id, " => ", doc.data());
@@ -54,16 +150,16 @@
 
         if (curr[len - 1] == 'T') {
           var qs = doc.data().qs;
-          
+
           //console.log(qs);
           additional = document.createElement("div");
           additional.className = 'textType';
           additional.innerHTML += `
     
      <p class="hi">Hi </p>
-      <textarea type="text" class="sample-text" oncopy="return false" onpaste="return false" oncut="return false">
-        Type your answer here
-      </textarea>
+      <textarea type="text"  class="sample-text" oncopy="return false" onpaste="return false" oncut="return false" placeholder="Type your answer here" ></textarea>
+        
+      
       
       <div class="seperator">
 
@@ -81,15 +177,15 @@
           mainContainer.appendChild(additional);
 
           mainContainer.childNodes[count].childNodes[1].innerHTML = qs;
-          fn(doc.data().req, mainContainer.childNodes[count].childNodes[5].childNodes[3]);
-          
+          fn(doc.data().req, mainContainer.childNodes[count].childNodes[1]);
+
 
           count++;
         }
 
         if (curr[len - 1] == 'U') {
           var qs = doc.data().qs;
-          
+
           //console.log(qs);
           additional = document.createElement("div");
           additional.className = 'uploadType';
@@ -119,14 +215,14 @@
 
           mainContainer.childNodes[count].childNodes[1].innerHTML = qs;
 
-          fn(doc.data().req, mainContainer.childNodes[count].childNodes[5].childNodes[3]);
+          fn(doc.data().req, mainContainer.childNodes[count].childNodes[1]);
           count++;
 
         }
 
         if (curr[len - 1] == 'O') {
           var qs = doc.data().qs;
-         
+
           //console.log(qs);
           additional = document.createElement("div");
 
@@ -152,7 +248,7 @@
           mainContainer.childNodes[count].childNodes[1].innerHTML = qs;
 
 
-          fn(doc.data().req, mainContainer.childNodes[count].childNodes[7].childNodes[3]);
+          fn(doc.data().req, mainContainer.childNodes[count].childNodes[1]);
           var option = doc.data().op;
           //  console.log(option);
           for (var i = 1; i <= option.length; i++) {
@@ -191,6 +287,31 @@
 </script>
 
 <script>
+  var roll_number = document.getElementById("op");
+
+
+  //body.addEventListener("load",init())
+
+
+  function previous_roll_check() {
+    //console.log(previous_roll_no.length);
+    for (var i = 0; i < previous_roll_no.length; i++) {
+      if (roll_number.value == previous_roll_no[i]) {
+        roll_number.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        alert("Roll no " + roll_number.value + " already used ");
+
+        return false;
+      }
+    }
+    return true;
+
+  }
+
+</script>
+
+
+
+<script>
 
   const form = document.getElementById("main");
   const button = document.querySelector("#submit_form");
@@ -204,72 +325,110 @@
     (e) => {
 
 
-      //console.log(title.value);
-
-      //  db.collection('form').doc(title.value).collection('ans').doc()
-      var ID;
-      for (var child = form.firstChild; child !== null; child = child.nextSibling) {
-
-        if (child.className == 'ID') {
-          ID = child.value;
-          //console.log("hi");
-
-        }
-        //text type
-        if (child.className == 'textType box') {
-
-          // console.log(child.childNodes[2].childNodes[1].value);
-          db.collection('form').doc(title.innerHTML).collection("ans").doc(ID).collection(String(count1)).doc('ans_doc').set({
-            ans: child.childNodes[2].childNodes[1].value,
-
-          });
-          count1++;
-
-        }
-
-        //mcq type
-        if (child.className == 'mcqType box') {
 
 
-          var mcq_ans = [];
-          for (var i = 1; child.childNodes[3].childNodes[1].childNodes[i] != null; i++) {
-            //console.log(child.childNodes[3].childNodes[1].childNodes[i].childNodes[0].checked);
-            mcq_ans[i - 1] = child.childNodes[3].childNodes[1].childNodes[i].childNodes[0].checked;
+
+
+
+      // console.log(null_check());
+
+
+      if (null_check() && previous_roll_check()) {
+        //console.log(title.value);
+
+        //  db.collection('form').doc(title.value).collection('ans').doc()
+        var ID;
+        for (var child = form.firstChild; child !== null; child = child.nextSibling) {
+
+          if (child.className == 'ID') {
+            ID = child.value;
+            //console.log("hi");
+            db.collection("form").doc(title.innerHTML).collection("ans").doc(ID).set({
+              roll: ID,
+            });
 
           }
-          db.collection('form').doc(title.innerHTML).collection("ans").doc(ID).collection(String(count1)).doc('ans_doc').set({
-            ans: mcq_ans,
 
-          });
-          count1++;
+
+
+          //text type
+          if (child.className == 'textType box') {
+
+            console.log(child.childNodes[3].value);
+            db.collection('form').doc(title.innerHTML).collection("ans").doc(ID).collection("ans_1").doc(String(count1) + "_T").set({
+              ans: child.childNodes[3].value,
+
+            });
+            count1++;
+
+
+          }
+
+          //mcq type
+          if (child.className == 'mcqType box') {
+
+
+            var mcq_ans = [];
+            for (var i = 1; child.childNodes[3].childNodes[1].childNodes[i] != null; i++) {
+              //console.log(child.childNodes[3].childNodes[1].childNodes[i].childNodes[0].checked);
+              mcq_ans[i - 1] = child.childNodes[3].childNodes[1].childNodes[i].childNodes[0].checked;
+
+            }
+            db.collection('form').doc(title.innerHTML).collection("ans").doc(ID).collection("ans_1").doc(String(count1) + "_O").set({
+              ans: mcq_ans,
+
+            });
+            count1++;
+
+          }
+
+
+          //upload file
+
+          let storageRef = firebase.storage().ref(title.innerHTML + "/" + ID + "/" + count1);
+
+          if (child.className == 'uploadType box') {
+
+            let file = child.childNodes[3].files[0];
+            console.log(file);
+            let this_ref = storageRef.child('ans');
+
+            this_ref.put(file).then(res => {
+              console.log('done');
+            }).catch(e => {
+              console.log('error uploading' + e);
+            })
+
+            db.collection('form').doc(title.innerHTML).collection("ans").doc(ID).collection("ans_1").doc(String(count1) + "_U").set({
+              ans: "pdf",
+
+            });
+
+            count1++;
+          }
+
+
+
 
         }
-
-
-        //upload file
-
-        let storageRef = firebase.storage().ref(title.innerHTML + "/" + ID);
-
-        if (child.className == 'uploadType box') {
-
-          let file = child.childNodes[2].childNodes[1].files[0];
-          console.log(file);
-          let this_ref = storageRef.child('ans');
-
-          this_ref.put(file).then(res => {
-            console.log('done');
-          }).catch(e => {
-            console.log('error uploading' + e);
-          })
-
-
-        }
-
-
-
-
+        document.write(`<div class="container">
+    <div class="box form_title" style="background-color: rgb(239, 241, 231); border: 2px solid green;  ">
+        <h1>Thank You</h1>
+        <p>Thank you for submitting your response.</p>
+    </div>
+</div>`);
       }
-    }
-  )
+
+    })
 
 </script>
+
+{{!--
+<script>
+  submit = document.querySelector("#submit_form");
+  submit.addEventListener('click',
+    (e) => {
+
+      window.location.href = "/thanks";
+    })
+</script> --}}

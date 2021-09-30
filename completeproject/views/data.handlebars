@@ -7,51 +7,60 @@
         <h3 style="font-family: cursive; text-align: center;">Creator's Login</h2>
       </div>
       <br>
-      <form method="POST" action="/">
-        <div id="compo2"><input type="text" name="name" id="admin" class="con" placeholder="Admin"
-            style="font-family: cursive; padding-left: 50px;font-weight: bold; margin: 7px 0;" required></div>
-        <div id="compo3"> <input type="password" name="password" id="pass" class="con" placeholder="Password"
-            style="font-family: cursive; padding-left: 50px; font-weight: bold;" required></div>
+      <form method="POST" action="/" id="myform">
+        <i class="fa fa-envelope fa-lg" aria-hidden="true"></i>
+        <span id="compo2">
+          <input type="text" name="name" id="admin" class="con" placeholder="Admin"
+            style="font-family: cursive; padding-left: 50px;font-weight: bold; margin: 7px 0;" required>
+        </span>
         <br>
-        <div id="compo4" ><button id="but" style="color: black; text-decoration: none; margin: 15px 0 0 0;">LOGIN</button></div>
+        <i class="fa fa-lock fa-2x" aria-hidden="true"></i>
+        <span id="compo3">
+          <input type="password" name="password" id="pass" class="con" placeholder="Password"
+            style="font-family: cursive; padding-left: 50px; font-weight: bold;" required>
+        </span>
+        <br>
+
+        <div id="compo4">
+          <button id="but" style="color: black; text-decoration: none; margin: 15px 0 0 0;" type="submit">
+            LOGIN
+          </button>
+        </div>
+
 
       </form>
 
-      
 
-      <div id="compo5"> <a href="google.com">
-          <h5 style="font-family: cursive; text-align: center;">Forgot <span
-              style="font-family: cursive;">Username/Password</span></h5>
+      <div id="compo5">
+         <a href="google.com">
+          <h5 style="font-family: cursive; text-align: center;">Forgot
+            <span style="font-family: cursive;">Username/Password</span>
+          </h5>
       </div></a>
-      <a href="/userForm">user</a>
+      {{!-- <a href="/userForm" id="sending_data">user</a> --}}
     </div>
   </div>
 </div>
 
+
+
+
+
+{{!--
 <script>
-  //global variable
-  var user_n, pass;
-  //retrieve data from admin collection
-  db.collection("admin").get().then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-      user_n = doc.data().username;
-      pass = doc.data().password;
-    });
-  });
-  const form = document.querySelector('#myform');
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (user_n == form.querySelector('name') && pass == form.querySelector('pass')
-          {
-      window.location.href = "/form";
-    }
 
-    else {
-      window.location.href = "/data";
-    }
-          
-          )
 
-    })
-   
-</script>
+
+  var form_name = "how";
+
+
+  var encrypted = btoa(form_name);
+  var decrypted = atob(encrypted);
+  //var temp="form_title="+encrypted;
+  //console.log(encrypted+"/n"+decrypted);
+  var temp = "/userForm?form_title=" + encrypted;
+  document.getElementById('sending_data').href = temp;
+
+
+
+</script> --}}

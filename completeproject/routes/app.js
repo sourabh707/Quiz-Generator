@@ -11,8 +11,7 @@ require("firebase/firestore");
 require("firebase/app");
 const router = express.Router()
 
-
-const session_time=1000*60*60*24*1;
+const session_time = 1000 * 60 * 60 * 24 * 1;
 
 var firebaseConfig = {
   apiKey: "AIzaSyDD6ZpbrX17ySGVrH8w0wYDqvGyMXYnPlo",
@@ -25,29 +24,30 @@ var firebaseConfig = {
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore();
-db.settings({timestampsInSnapshots: true});
+const db = firebase.firestore();
+db.settings({ timestampsInSnapshots: true });
 
 //retrieve
-var user_n, pass,users=[{id:null,name:null,password:null}];
-var docRef=db.collection('admin').doc('D3yNdD3ohBc0SmNQYuNK').collection('credentials').onSnapshot((querySnapshot)=>{
+var user_n, pass, users = [{ id: null, name: null, password: null }];
+var docRef = db.collection('admin').doc('password').collection('credentials').onSnapshot((querySnapshot) => {
   querySnapshot.forEach((doc) => {
-  user_n = doc.data().username,
-     pass = doc.data().password;
-     console.log(user_n,pass);
-     users[0].id=1;
-  users[0].name=user_n;
-  users[0].password=pass;
-});});
+    user_n = doc.data().username,
+      pass = doc.data().password;
+    console.log(user_n, pass);
+    users[0].id = 1;
+    users[0].name = user_n;
+    users[0].password = pass;
+  });
+});
 
 // var docRef=db.collection('admin').doc('D3yNdD3ohBc0SmNQYuNK').collection('credentials').onSnapshot((querySnapshot)=>{
 //   querySnapshot.forEach((doc) => {
 //   user_n = doc.data().username,
 //      pass = doc.data().password;
 //      console.log(user_n,pass);
-  //    users[0].id=1;
-  //  users[0].name=user_n;
-  //  users[0].password=pass;
+//    users[0].id=1;
+//  users[0].name=user_n;
+//  users[0].password=pass;
 // });});
 
 
@@ -65,85 +65,92 @@ router.use(cookieParser());
 
 router.use(
   session({
-    name:'sid',
-    resave:false,
-    saveUninitialized:false,
-    secret:'sid_the_sloth',
+    name: 'sid',
+    resave: false,
+    saveUninitialized: false,
+    secret: 'sid_the_sloth',
     cookie: {
-      maxAge:session_time,
-      sameSite:true,
-      secure:false,
+      maxAge: session_time,
+      sameSite: true,
+      secure: false,
     },
-   
+
   })
 );
 
-const redirectLogin=(req,res,next)=>{
-  if(!req.session.userId)
-   res.redirect("/")
-   
+const redirectLogin = (req, res, next) => {
+  if (!req.session.userId)
+    res.redirect("/")
+
   else
-  next();
-  
+    next();
+
 }
 
-const redirectHome=(req,res,next)=>{
-  if(req.session.userId)
-   res.redirect("/form")
-   
+const redirectHome = (req, res, next) => {
+  if (req.session.userId)
+    res.redirect("/form")
+
   else
-  next();
-  
+    next();
+
 }
 
-router.get('/',redirectHome,(req,res)=>{
-  const {userId}=req.session;
+router.get('/', redirectHome, (req, res) => {
+  const { userId } = req.session;
   console.log(req.session);
-  if(userId)
-  window.location.href="/form";
+  if (userId)
+    window.location.href = "/form";
   else
-   res.render('data',{
-     style:'data.css'
-   });
-})
-
-router.get('/form',redirectLogin,(req,res)=>{
-    res.render('form',{
-      style:'form.css'
+    res.render('data', {
+      style: 'data.css'
     });
 })
-router.get('/newForm',redirectLogin,(req,res)=>{
-  res.render('createNew',{
-    style:'newForm.css'
+
+router.get('/form', redirectLogin, (req, res) => {
+  res.render('form', {
+    style: 'form.css',
   });
 })
-router.get('/userForm',(req,res)=>{
-  res.render('user_form',{
-    style:'newForm.css'
+router.get('/newForm', redirectLogin, (req, res) => {
+  res.render('createNew', {
+    style: 'newForm.css'
+  });
+})
+router.get('/userForm', (req, res) => {
+  res.render('user_form', {
+    style: 'newForm.css'
+  });
+})
+router.get('/response', (req, res) => {
+  res.render('response', {
+    style: 'newForm.css'
   });
 })
 
 
 
 
-router.post('/',redirectHome,(req,res)=>{
-  const {name,password}=req.body;
-  console.log(name,password);
-if(name && password)
-{  console.log(name,password);
-  const user=users.find(user=>user.name===name && user.password ===password)
-  if(user)
-  { 
-    req.session.userId=user.id;
-    res.redirect('/form');
+
+router.post('/', redirectHome, (req, res) => {
+  const { name, password } = req.body;
+  console.log(name, password);
+  if (name && password) {
+    console.log(name, password);
+    const user = users.find(user => user.name === name && user.password === password)
+    if (user) {
+      req.session.userId = user.id;
+      res.redirect('/form');
+    }
+    else
+      res.redirect('/');
   }
-}
-res.redirect('/');
+
 })
-router.post('/logout',redirectLogin,(req,res)=>{
-  req.session.destroy(err=>{
-    if(err)//error destroying cookie
-    return res.redirect('/');
+router.post('/logout', redirectLogin, (req, res) => {
+  req.session.destroy(err => {
+    if (err)//error destroying cookie
+      return res.redirect('/');
     res.clearCookie('sid');
     res.redirect('/');
   })

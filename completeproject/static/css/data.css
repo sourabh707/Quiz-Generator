@@ -47,10 +47,14 @@ img {
     width: 250px;
 }
 
+#compo4{
+    padding-left: 25px;
+}
+
 #but {
     position: relative;
     height: 35px;
-    width: 250px;
+    width: 230px;
     border-radius: 20px;
 
 
@@ -81,25 +85,9 @@ img {
 
 }
 
-input#admin {
-    background-image: url("../img/email.png");
-    background-position: 15px;
-    background-repeat: no-repeat;
-    background-size: 20px;
-    /* padding-left:25px; */
-}
-
-input#pass {
-    background-image: url("../img/padlock.png");
-    background-position: 15px;
-    background-repeat: no-repeat;
-    background-size: 20px;
-    /* padding-left:25px; */
-}
-
 .con {
     height: 35px;
-    width: 200px;
+    width: 180px;
     border-radius: 20px;
     background-color: lightgrey;
     border: none;
@@ -336,7 +324,7 @@ a {
 
     .con {
         height: 35px;
-        width: 200px;
+        width: 180px;
         border-radius: 20px;
         background-color: lightgrey;
         border: none;
