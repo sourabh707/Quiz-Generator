@@ -1,0 +1,298 @@
+<nav class="navbar">
+    <div class="rightnav">
+        <form action="/logout" method="POST">
+            <button>Logout</button>
+    </div>
+</nav>
+<div class="container">
+    <div class="box" id="show">
+        <a class="a" href="/newForm"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+        <div class="hide">Create New form</div>
+        <h1>FORMS YOU CREATED TILL NOW</h1>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+<script>
+    var append = document.querySelector("#show");
+    var counter = 7;
+    var docRef = db.collection('form');
+    var doc_id;
+
+    function renderdata(doc) {
+        var date = doc.data().date;
+        doc_id = doc.id;
+        additional = document.createElement("div");
+        additional.className = 'row';
+        //additional.setAttribute('data-id',doc_id);
+        additional.setAttribute("data-id", String(doc.id));
+        additional.innerHTML += `
+          <a  href="" id="response" class="omg" onclick="getresponse(this)" style="margin: 10px; padding: 10px; font-size: 18px; font-weight: bold; float:left; color:black;">
+           <div class="subject"> Maths </div>
+           </a>
+                <div class="fixedItems">
+                    <div class="date">20/07/2021</div>
+                    <a  class="delete"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                    <a  onclick="im_csv_fn(this)" class="download"><i class="fa fa-download" aria-hidden="true"></i></a>
+                    <a  id="copylink" href=""><i class="fa fa-clipboard fa-xs" aria-hidden="true"></i></a>
+                </div>
+                
+          `;
+        brak = document.createElement("br");
+        brak.className = "dont delete me";
+
+        // brak.setAttribute('data-id',"null");
+        append.appendChild(additional);
+        append.appendChild(brak);
+
+
+
+        append.childNodes[counter].childNodes[3].childNodes[1].innerHTML = date;
+        append.childNodes[counter].childNodes[1].innerHTML = doc_id;
+
+        let cross = append.childNodes[counter].childNodes[3].childNodes[3];
+        var copylink = append.childNodes[counter].childNodes[3].childNodes[7];
+
+        counter += 2;
+        //delete
+
+
+        cross.addEventListener('click', (e) => {
+
+            var result = confirm("Are you sure you want to delete this form?");
+            if (result) {
+                e.stopPropagation();
+                let id = e.target.parentElement.parentElement.parentElement.getAttribute('data-id');
+                docRef.doc(id).delete();
+
+                //delete uploaded files from storage
+                var cur_roll = [];
+                var j = 0;
+                db.collection('form').doc(id).collection("ans").get()
+                    .then((querySnapshot) => {
+                        querySnapshot.forEach((doc) => {
+                            cur_roll[j] = doc.id;
+                            j++;
+                            // doc.data() is never undefined for query doc snapshots
+                        });
+
+
+                        for (var k = 0; k < cur_roll.length; k++) {
+                            let num = cur_roll[k];
+                            db.collection('form').doc(id).collection("ans").doc(num).collection("ans_1").get()
+                                .then((querySnapshot) => {
+                                    querySnapshot.forEach((doc) => {
+
+                                        var curr = doc.id;
+                                        var len = curr.length;
+                                        if (curr[len - 1] == 'U') {
+
+
+                                            let storageRef = firebase.storage().ref(id + "/" + num + "/" + curr[len - 3] + "/");
+                                            let this_ref = storageRef.child('ans');
+                                            this_ref.delete().then(() => {
+                                                console.log("Delete Successfully");
+                                            }).catch((error) => {
+                                                console.log("Error getting documents: ", error);
+                                            });
+                                        }
+
+                                    });
+                                });
+                        }
+
+                    });
+            }
+        })//end of eventlistener
+
+
+        copylink.addEventListener('click', (e) => {
+            e.preventDefault();
+            var form_name = e.target.parentElement.parentElement.parentElement.getAttribute('data-id');
+
+            var encrypted = btoa(form_name);
+            var decrypted = atob(encrypted);
+            var temp = "/userForm?form_title=" + encrypted;
+            e.target.parentElement.href = temp;
+            copyText = e.target.parentElement.href;
+            navigator.clipboard.writeText(copyText);
+            alert("Copied the text: " + copyText);
+        })
+
+
+    }
+
+
+    var dta = document.getElementById("show");
+    docRef.onSnapshot(snapshot => {
+        let changes = snapshot.docChanges();
+
+        changes.forEach(change => {
+
+            if (change.type == 'added') {
+                renderdata(change.doc);
+
+
+            }
+            else if (change.type == 'removed') {
+                let dataid = String(change.doc.id);
+                let li = dta.querySelector('[data-id=\'' + String(change.doc.id) + '\']');
+
+                // console.log(li.nextSibling);
+                li.nextSibling.parentNode.removeChild(li.nextSibling);
+                dta.removeChild(li);
+                //dta.remove(li.nextSibling);
+
+
+            }
+        })
+    })
+
+    function getresponse(title) {
+        var form_title = title.innerHTML;
+        var clicked_title = "/response?form_title=" + form_title;
+        title.href = clicked_title;
+        console.log(clicked_title);
+
+
+    }
+
+
+
+
+</script>
+
+
+<script>
+    var roll_no = [], answer = [];
+    async function im_csv_fn(that) {
+
+        // Await for the promise to resolve
+
+        let citiesRef = db.collection("form").doc(that.parentNode.previousSibling.previousSibling.innerHTML).collection("ans");
+        let allCities = await citiesRef.get();
+        for (const doc of allCities.docs) {
+            var p = doc.id;
+            roll_no.push(p)
+
+
+        }
+
+        for (var i = 0; i < roll_no.length; i++) {
+
+
+            let citiesRef = db.collection("form").doc(that.parentNode.previousSibling.previousSibling.innerHTML).collection("ans").doc(roll_no[i]).collection("ans_1");
+            let allCities = await citiesRef.get();
+            for (const doc of allCities.docs) {
+                var p = doc.data().ans;
+                var x = doc.id;
+
+                //console.log(p);
+                if (p == "pdf") {
+
+
+                    let storageRef = firebase.storage().ref(that.parentNode.previousSibling.previousSibling.innerHTML + "/" + roll_no[i] + "/" + x.slice(0, x.length - 2));
+                    let this_ref = storageRef.child('ans');
+
+                    var limks = await this_ref.getDownloadURL();
+                    //this_ref.getDownloadURL()
+                    // limks.then((url) => {
+
+                    p = limks;
+
+                    //  }).catch(e => {
+                    //     console.log('error uploading' + e);
+                    // })
+
+                }
+                //console.log(doc.id);
+                //console.log(p + "ans element");
+                answer.push(p);
+            }
+
+
+
+        }
+
+        //console.log(roll_no[0]);
+        //console.log(answer[0]);
+
+        // console.log(roll_no);
+
+        var tempo = [], realo = [];
+
+        for (var i = 0; i < roll_no.length; i++) {
+            tempo[0] = roll_no[i];
+            // console.log(tempo[0]);
+            var ok = 1;
+            for (var j = i * answer.length / roll_no.length; j < (i + 1) * answer.length / roll_no.length; j++) {
+                if (typeof (answer[j]) == "object") {
+                    var rukja = "";
+                    for (var omkey = 0; omkey < answer[j].length; omkey++) { //  console.log(answer[j][omkey]);
+                        if (answer[j][omkey] == true)
+                            rukja = rukja + "true" + "_";
+                        else
+                            rukja += "false" + "_";
+                    }
+                    // rukja=rukja+toString(answer[omkey])+"_";
+                    tempo[ok] = rukja;
+                }
+                else
+                    tempo[ok] = answer[j];
+                ok++;
+            }
+            // console.log(tempo);
+            //realo[i]=tempo;
+            //**yeh glt tareeka coz realo[0],realo[1] all arre storing ref to tempo only as tempo changes i=0,1,2,.. all gets same as they all refer to same
+            var temp = tempo.slice();
+            realo.push(temp);
+
+
+        }
+        console.log("CSV downloading");
+        download_csv_file(realo);
+    }
+
+    // console.log(that.parentNode.previousSibling.previousSibling.className);
+
+    function download_csv_file(csvFileData) {
+
+        //define the heading for each row of the data
+        var csv = 'Roll No,';
+        for (var i = 1; i < csvFileData[0].length; i++)
+            csv += "Qs_" + i + ",";
+        csv += '\n';
+
+        //merge the data with CSV
+        csvFileData.forEach(function (row) {
+            csv += row.join(',');
+            csv += "\n";
+        });
+
+        //display the created CSV data on the web browser 
+        //document.write(csv);
+
+
+        var hiddenElement = document.createElement('a');
+        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+        hiddenElement.target = '_blank';
+
+        //provide the name for the CSV file to be downloaded
+        hiddenElement.download = 'Answersheet.csv';
+        hiddenElement.click();
+    }
+
+
+
+
+
+
+
+
+</script>

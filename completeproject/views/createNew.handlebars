@@ -1,0 +1,419 @@
+<div onload="doSetup()">
+
+  {{!-- popup msg when a form created --}}
+
+
+  <div class="container">
+    <div class="box form_title">
+      <input type="text" placeholder="Title of form" id="title" class="nullCheck">
+      <input type="text" placeholder="Form description" id="desc" class="nullCheck">
+    </div>
+
+    <div class="icon-bar">
+      <div class="add-elements">
+        add
+      </div>
+      <i class="fa fa-list-ol ic" aria-hidden="true" id="multiple"></i>
+      <i class="fa fa-paragraph ic" aria-hidden="true" id="paragraph"></i>
+      <i class="fa fa-file ic" aria-hidden="true" id="fileUpload"></i>
+    </div>
+
+    <form id="main">
+      {{!-- <div class="box">
+        <input type="text" placeholder="Question">
+        <div class="sample-text">
+          Upload a file
+        </div>
+        <div class="seperator"></div>
+        <div class="question-control">
+          <button class="up" onclick="upar(parentNode.parentNode)" type="button"><i class="fa fa-arrow-up"
+              aria-hidden="true"></i></button>
+          <button class="down" onclick="niche(parentNode.parentNode)" type="button">&nbsp <i class="fa fa-arrow-down"
+              aria-hidden="true"></i></button>
+          <div class="required">
+
+            <span>Required</span>
+            <input type="checkbox" id="switch" class="checkbox" />
+            <label for="switch" class="toggle">
+              <label class="toggleHelper"></label>
+            </label>
+          </div>
+          <div class="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></div>
+        </div>
+      </div> --}}
+
+    </form>
+
+    <div class="result">
+      <div class="create-button" id="submit_form">Create</div>
+      <a href='/form'>
+        <div class="cancel-button">Cancel</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  let addMCQQuestion = document.getElementById('multiple');
+  let addParaQuestion = document.getElementById('paragraph');
+  let fileUploadQuestion = document.getElementById('fileUpload');
+  let mainContainer = document.getElementById("main");
+  let body1 = document.getElementsByTagName('body');
+  let deleteButtons = document.getElementsByClassName("delete");
+  let shuffle = document.getElementById('shuffle');
+  let byebye = document.getElementsByClassName('option_delete');
+  // rearrange up
+  function upar(element) {
+    if (element.previousElementSibling) {
+      element.parentNode.insertBefore(element, element.previousElementSibling);
+    }
+  }
+  //rearrange down
+  function niche(element) {
+
+    if (element.nextElementSibling) {
+      element.parentNode.insertBefore(element.nextElementSibling, element);
+    }
+  }
+  function doSetup() {
+    setupDeleteButtons();
+    setupToggles();
+  }
+
+  let getSiblings = function (e) {
+    let siblings = [];
+    if (!e.parentNode) {
+      return siblings;
+    }
+    let sibling = e.parentNode.firstChild;
+
+    while (sibling) {
+      if (sibling.nodeType === 1 && sibling !== e) {
+        siblings.push(sibling);
+      }
+      sibling = sibling.nextSibling;
+    }
+    return siblings;
+  };
+
+  function setupDeleteButtons() {
+    for (gone of deleteButtons) {
+      gone.addEventListener('click', (e) => {
+        if (e.target.closest('div.box').remove()) {
+        }
+      })
+    }
+  }
+  ////////////////////////////////
+
+
+  function hasClass(element, className) {
+    return (' ' + element.className + ' ').indexOf(' ' + className + ' ') > -1;
+  }
+
+  function setupToggles() {
+    let toggles = document.getElementsByClassName("toggle");
+    let toggleHelpers = document.getElementsByClassName("toggleHelper");
+
+    toggleHelpers[toggleHelpers.length - 1].addEventListener('click', (event) => {
+      event.stopPropagation();
+    })
+
+    toggles[toggles.length - 1].addEventListener('click', (e) => {
+      var currEl = e.target;
+      let siblings = getSiblings(currEl);
+
+      if (!siblings[0].checked) {
+        currEl.style.backgroundColor = 'rgb(111, 217, 243)';
+        currEl.style.border = "2px solid rgb(111, 217, 243)";
+        currEl.firstChild.nextElementSibling.style.left = "15px"
+      }
+      else {
+        currEl.style.backgroundColor = 'white';
+        currEl.style.border = " 2px solid gray";
+        currEl.firstChild.nextElementSibling.style.left = "-5px"
+      }
+      siblings[0].checked = !siblings[0].checked;
+    })
+  }
+
+  addParaQuestion.addEventListener('click', () => {
+    additional = document.createElement("div");
+    additional.className = 'textType';
+    additional.innerHTML = `
+      <input type="text" placeholder="Question" class="nullCheck" />
+      <div class="sample-text">
+        Type your answer here
+      </div>
+       
+      
+      <div class="seperator">
+
+      </div>
+      <div class="question-control">
+        <button class="up" onclick="upar(parentNode.parentNode)" type="button"><i class="fa fa-arrow-up" aria-hidden="true"></i></button>
+        <button class="down" onclick="niche(parentNode.parentNode)" type="button"><i class="fa fa-arrow-down" aria-hidden="true"></i></button>
+        <div class="required">
+          <span>Required</span>
+          <input type="checkbox" id="switch" class="checkbox"  />
+          <label for="switch"  class="toggle" onclick="fn(this)" >
+          <label class="toggleHelper"></label>
+         
+        </label>
+        </div>
+        <div class="delete"><i class="fa fa-trash-o add" aria-hidden="true"></i></div>
+      </div>
+  `
+    additional.classList.add("box");
+    mainContainer.appendChild(additional);
+    setupDeleteButtons();
+    setupToggles();
+  });
+
+
+  fileUploadQuestion.addEventListener('click', () => {
+    additional = document.createElement("div");
+    additional.className = "uploadType";
+    additional.innerHTML = `
+    <input type="text" placeholder="Question" class="nullCheck">
+    
+    <div class="sample-text">
+      Upload file
+    </div>
+    <div class="seperator">
+    </div>
+    <div class="question-control">
+      <button class="up" onclick="upar(parentNode.parentNode)" type="button"><i class="fa fa-arrow-up" aria-hidden="true"></i></button>
+      <button class="down" onclick="niche(parentNode.parentNode)" type="button"><i class="fa fa-arrow-down" aria-hidden="true"></i></button>
+      <div class="required">
+        <span>Required</span>
+         <input type="checkbox" id="switch" class="checkbox"  />
+          <label for="switch"  class="toggle" onclick="fn(this)" >
+        <label class="toggleHelper"></label>
+        
+      </label>
+      </div>
+      <div class="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></div>
+    </div>
+  `
+    additional.classList.add("box");
+    mainContainer.appendChild(additional);
+    setupDeleteButtons();
+    setupToggles();
+  });
+
+  addMCQQuestion.addEventListener('click', () => {
+    additional = document.createElement("div");
+
+    additional.className = "mcqType";
+    additional.innerHTML = `
+      <input  type="text" placeholder="Question" class="nullCheck">
+      <div class="plus"><i class="fa fa-plus option" aria-hidden="true"></i></div>
+      <div id="possible">
+        <div class="indivisual">
+          <input class="option-input nullCheck"  placeholder = "Option"><button type="button" class="option_delete">X</button>
+        </div>
+      </div>
+      <div class="seperator"></div>
+      <div class="question-control">
+        <button class="up" onclick="upar(parentNode.parentNode)" type="button"><i class="fa fa-arrow-up" aria-hidden="true"></i></button>
+        <button class="down" onclick="niche(parentNode.parentNode)" type="button"><i class="fa fa-arrow-down" aria-hidden="true"></i></button>
+        <div class="required">
+          <span>Required</span>
+          <input type="checkbox" id="switch" class="checkbox" />
+          <label for="switch" class="toggle">
+          <label class="toggleHelper"></label>
+        </label>
+        </div>
+
+        <div class="delete"><i class="fa fa-trash-o" aria-hidden="true"></i></div>
+      </div>`
+    additional.classList.add("box");
+    mainContainer.appendChild(additional);
+    let possible = document.getElementById('possible');
+    let options = document.getElementsByClassName('option');
+    tog = document.getElementsByClassName('toggle');
+
+
+    options[options.length - 1].addEventListener('click', (e) => {
+      cheating = document.createElement("div");
+      cheating.classList.add('indivisual')
+      cheating.innerHTML = ` <input class="option-input nullCheck" placeholder = "Option"><button class="option_delete";>X</button>`;
+      e.target.parentElement.nextElementSibling.appendChild(cheating);
+      for (option_delete of byebye) {
+        option_delete.addEventListener('click', (e) => {
+          e.target.closest('div').remove();
+        })
+      }
+    })
+    setupDeleteButtons();
+    setupToggles();
+  })
+  let possible = document.getElementById('possible');
+  let options = document.getElementsByClassName('option');
+  let gayab = document.getElementsByClassName('indivisual');
+
+
+
+
+</script>
+
+<script>
+
+  const form = document.getElementById("main");
+  const button = document.querySelector("#submit_form");
+  const title = document.getElementById("title");
+  const desc = document.getElementById("desc");
+  const req = document.getElementById("switch");
+
+  //this se pass kra element kooo
+  function fn(this_reference) {
+    this_reference.previousElementSibling.checked = !this_reference.previousElementSibling.checked;
+  }
+
+  function null_check() {
+    var text_feilds = document.getElementsByClassName("nullCheck");
+    // console.log (text_feilds.length);
+    for (var i = 0; i < text_feilds.length; i++) {
+      //console.log(text_feilds[i].value);
+      if (text_feilds[i].value == "") {
+        // alert("fill up");
+        text_feilds[i].scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+        alert("fill up");
+
+        return false;
+
+      }
+
+
+
+    }
+    return true;
+
+
+  }
+
+  var previous_roll_no = [];
+  db.collection("form").get().then((querySnapshot) => {
+
+    querySnapshot.forEach((doc) => {
+      var p = doc.id;
+      previous_roll_no.push(p);
+      ///  console.log(p+" "+previous_roll_no.length);
+
+    })
+  })
+
+  var roll_number = document.getElementById("title");
+
+
+  //body.addEventListener("load",init())
+
+
+  function previous_roll_check() {
+    //console.log(previous_roll_no.length);
+    for (var i = 0; i < previous_roll_no.length; i++) {
+      if (roll_number.value == previous_roll_no[i]) {
+        roll_number.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        alert("Title " + roll_number.value + " already used ");
+
+        return false;
+      }
+    }
+    return true;
+
+  }
+
+
+  var count = 1;
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, '0');
+  var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+  var yyyy = today.getFullYear();
+
+  today = mm + '/' + dd + '/' + yyyy;
+  //console.log(today);
+  button.addEventListener('click',
+    (e) => {
+      var ch = null_check();
+      // console.log(ch);
+      if (ch && previous_roll_check()) {
+        //console.log("why im here");
+        //console.log(title.value);
+        db.collection('form').doc(title.value).set({
+          desc: desc.value,
+          date: today,
+
+        });
+
+        for (var child = form.firstChild; child !== null; child = child.nextSibling) {
+
+          //text type
+          if (child.className == 'textType box') {
+            var temp = count + "_T";
+            //for(var i=1;child.childNodes[7].childNodes[i]!=null;i++)
+            // console.log(child.childNodes[7].childNodes[5].childNodes[3].checked);
+            // console.log( child.childNodes[7].childNodes[5].childNodes[3].checked);
+            db.collection('form').doc(title.value).collection("hi").doc(temp).set({
+              qs: child.childNodes[1].value,
+              req: child.childNodes[7].childNodes[5].childNodes[3].checked
+
+            });
+            count++;
+          }
+
+          //mcq type
+          if (child.className == 'mcqType box') {
+            var temp = count + "_O";
+            var num = 1;
+            var l = [];
+
+            var n = 0;
+
+            for (var num = 1; child.childNodes[5].childNodes[num] != null; num++) {
+              l[n] = child.childNodes[5].childNodes[num].childNodes[1].value;
+              n++;
+              if (num == 1)
+                num += 1;
+            }
+            //console.log(child.childNodes[9].childNodes[5].childNodes[3].checked);
+            db.collection('form').doc(title.value).collection("hi").doc(temp).set({
+              qs: child.childNodes[1].value,
+              op: l,
+              req: child.childNodes[9].childNodes[5].childNodes[3].checked
+            });
+            count++;
+          }
+
+          //upload file
+          if (child.className == 'uploadType box') {
+            var temp = count + "_U";
+
+            //console.log(child.childNodes[7].childNodes[5].childNodes[3].checked);
+            db.collection('form').doc(title.value).collection("hi").doc(temp).set({
+              qs: child.childNodes[1].value,
+              req: child.childNodes[7].childNodes[5].childNodes[3].checked
+            });
+            count++;
+          }
+
+
+
+
+        }
+        document.write(`   <div style="background-color: rgb(239, 241, 231); border: 2px solid green;  ">Great!
+    Your form is successfully created.</div>`);
+      }
+
+
+    }
+
+
+
+  );
+
+
+
+
+</script>
